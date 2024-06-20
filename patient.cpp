@@ -5,6 +5,7 @@
 
 using namespace std;
 
+// Class to represent a patient
 class Patient {
 public:
     int id;
@@ -17,6 +18,7 @@ public:
             : id(id), name(name), dob(dob), gender(gender), next(nullptr) {}
 };
 
+// Class to represent a doctor
 class Doctor {
 public:
     int id;
@@ -28,6 +30,7 @@ public:
             : id(id), name(name), specialization(specialization), next(nullptr) {}
 };
 
+// Class to represent an appointment
 class Appointment {
 public:
     int appointment_id;
@@ -44,6 +47,7 @@ Patient* patientHead = nullptr;
 Doctor* doctorHead = nullptr;
 Appointment* appointmentHead = nullptr;
 
+// Function to display the menu
 void startMessage() {
     cout << " Menu: " << endl;
     cout << "1. Register a patient: " << endl;
@@ -55,6 +59,7 @@ void startMessage() {
     cout << "7. Exit: " << endl;
 }
 
+// Function to check if a patient ID is already taken
 bool isPatientIdTaken(int id) {
     Patient* temp = patientHead;
     while (temp != nullptr) {
@@ -66,6 +71,7 @@ bool isPatientIdTaken(int id) {
     return false;
 }
 
+// Function to check if a doctor ID is already taken
 bool isDoctorIdTaken(int id) {
     Doctor* temp = doctorHead;
     while (temp != nullptr) {
@@ -77,6 +83,7 @@ bool isDoctorIdTaken(int id) {
     return false;
 }
 
+// Function to check if a patient ID is valid (exists in the list)
 bool isPatientIdValid(int id) {
     Patient* temp = patientHead;
     while (temp != nullptr) {
@@ -88,6 +95,7 @@ bool isPatientIdValid(int id) {
     return false;
 }
 
+// Function to check if a doctor ID is valid (exists in the list)
 bool isDoctorIdValid(int id) {
     Doctor* temp = doctorHead;
     while (temp != nullptr) {
@@ -99,10 +107,12 @@ bool isDoctorIdValid(int id) {
     return false;
 }
 
+// Function to validate if the name contains only letters
 bool isValidName(const string& name) {
     return regex_match(name, regex("^[A-Za-z]+$"));
 }
 
+// Function to get a validated ID (numbers only)
 int getValidatedId() {
     string input;
     while (true) {
@@ -115,6 +125,7 @@ int getValidatedId() {
     }
 }
 
+// Function to get a validated choice (1-7)
 int getValidatedChoice() {
     string input;
     int choice;
@@ -129,6 +140,7 @@ int getValidatedChoice() {
     }
 }
 
+// Function to add a new patient
 void addPatient() {
     cout << "Enter patient ID: ";
     int id = getValidatedId();
@@ -164,6 +176,7 @@ void addPatient() {
     cout << "Patient added successfully." << endl;
 }
 
+// Function to add a new doctor
 void addDoctor() {
     cout << "Enter doctor ID: ";
     int id = getValidatedId();
@@ -197,6 +210,7 @@ void addDoctor() {
     cout << "Doctor added successfully." << endl;
 }
 
+// Function to add a new appointment
 void addAppointment() {
     cout << "Enter appointment ID: ";
     int appointment_id = getValidatedId();
@@ -234,6 +248,7 @@ void addAppointment() {
     cout << "Appointment added successfully." << endl;
 }
 
+// Function to display all patients
 void displayPatients() {
     Patient* temp = patientHead;
     cout << "Patients:" << endl;
@@ -243,6 +258,7 @@ void displayPatients() {
     }
 }
 
+// Function to display all doctors
 void displayDoctors() {
     Doctor* temp = doctorHead;
     cout << "Doctors:" << endl;
@@ -252,6 +268,7 @@ void displayDoctors() {
     }
 }
 
+// Function to display all appointments
 void displayAppointments() {
     Appointment* temp = appointmentHead;
     cout << "Appointments:" << endl;
@@ -261,6 +278,7 @@ void displayAppointments() {
     }
 }
 
+// Function to process user commands
 void processCommands() {
     int choice;
     do {

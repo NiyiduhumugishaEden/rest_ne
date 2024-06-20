@@ -115,6 +115,20 @@ int getValidatedId() {
     }
 }
 
+int getValidatedChoice() {
+    string input;
+    int choice;
+    while (true) {
+        cin >> input;
+        if (regex_match(input, regex("^[1-7]$"))) {
+            choice = stoi(input);
+            return choice;
+        } else {
+            cout << "Invalid choice. Please enter a number between 1 and 7: ";
+        }
+    }
+}
+
 void addPatient() {
     cout << "Enter patient ID: ";
     int id = getValidatedId();
@@ -252,7 +266,7 @@ void processCommands() {
     do {
         startMessage();
         cout << "Enter your choice: ";
-        cin >> choice;
+        choice = getValidatedChoice();
         switch (choice) {
             case 1:
                 addPatient();

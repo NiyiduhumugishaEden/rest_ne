@@ -1,296 +1,288 @@
 #include <iostream>
+#include <string>
+#include <sstream>
 #include <regex>
 
 using namespace std;
 
-// patient class to hold patient details
 class Patient {
-private:
+public:
     int id;
     string name;
     string dob;
     string gender;
-public:
-    // Constructor to initialize patient details
-    Patient(int id, string name , string dob,string gender) :
-            id(id),
-            name(name),
-            dob(dob),
-            gender(gender){};
-    // Getter for patient ID
-    int getId() {
-        return id;
-    }
-    // Getter for patient's first name
-    string getName() {
-        return name;
-    }
-    // Getter for patient's last name
-    string getDob() {
-        return dob;
-    }
-    // Getter for patient's full name
-    string getGender() {
-        return gender;
-    }
-    // Setter for patient's first name
-    void setName(string newFirstName) {
-        name = newFirstName;
-    }
+    Patient* next;
+
+    Patient(int id, string name, string dob, string gender)
+            : id(id), name(name), dob(dob), gender(gender), next(nullptr) {}
 };
+
 class Doctor {
-private:
+public:
     int id;
     string name;
     string specialization;
+    Doctor* next;
 
-    Doctor *next;
-
-    Doctor(int id, string name, string  specialization)
-    {
-        id = id;
-        name = name;
-        specialization = specialization;
-    
-        next = NULL;
-    }
-
-     void addDoctor(Doctor doctor) {
-        Doctor* newNode = new Doctor();
-        if (!head) {
-            head = newNode;
-        } else {
-            Node* temp = head;
-            while (temp->next) {
-                temp = temp->next;
-            }
-            temp->next = newNode;
-        }
-    }
-    // Function to print the list of patients
-    void printDoctors() {
-        cout << "Doctors" << endl;
-        cout << "---------------------" << endl;
-        Doctor* temp = head;
-        int index = 1;
-        while (temp) {
-            cout << "(" << index << ") : " << temp->patient.getId() << " " << temp->patient.getName() << " " << temp->patient.getGender() << endl;
-            temp = temp->next;
-            index++;
-        }
-        cout << "---------------------" << endl;
-    }
-    // Function to find a patient by ID
-    bool isIdTaken(int id) {
-        Node* temp = head;
-        while (temp) {
-            if (temp->patient.getId() == id) {
-                return true;
-            }
-            temp = temp->next;
-        }
-        return false;
-    }
+    Doctor(int id, string name, string specialization)
+            : id(id), name(name), specialization(specialization), next(nullptr) {}
 };
 
-
-class Appointment
-{
+class Appointment {
 public:
     int appointment_id;
     int patient_id;
     int doctor_id;
-
     string appointment_date;
+    Appointment* next;
 
-    Appointment *next;
-
-    Appointment(int id, int p_id, int d_id, string a_date)
-    {
-        appointment_id = id;
-        patient_id = p_id;
-        doctor_id = d_id;
-        appointment_date = a_date;
-        next = NULL;
-    }
+    Appointment(int appointment_id, int patient_id, int doctor_id, string appointment_date)
+            : appointment_id(appointment_id), patient_id(patient_id), doctor_id(doctor_id), appointment_date(appointment_date), next(nullptr) {}
 };
 
-bool checkAppointmentId(Appointment *&head, int id)
-{
-    Appointment *temp = head;
-    while (temp != NULL)
-    {
-        if (temp->appointment_id == id)
-        {
+Patient* patientHead = nullptr;
+Doctor* doctorHead = nullptr;
+Appointment* appointmentHead = nullptr;
+
+void startMessage() {
+    cout << " Menu: " << endl;
+    cout << "1. Register a patient: " << endl;
+    cout << "2. Register a doctor: " << endl;
+    cout << "3. Register an appointment: " << endl;
+    cout << "4. Display patients: " << endl;
+    cout << "5. Display doctors: " << endl;
+    cout << "6. Display appointments: " << endl;
+    cout << "7. Exit: " << endl;
+}
+
+bool isPatientIdTaken(int id) {
+    Patient* temp = patientHead;
+    while (temp != nullptr) {
+        if (temp->id == id) {
             return true;
         }
         temp = temp->next;
     }
-    
-    
-void addAppointment(Appointment *&appHead, Patient *&head, Doctor *&dhead, int id, int p_id, int d_id, string a_date)
-{
-    bool is_appointment_already_taken = checkAppointmentId(appHead, id);
-    if (is_appointment_already_taken)
-    {
-        std::cout << "Appointment with the given appointment_id already existent." << endl;
-        return;
-    }
-    if (findPatient(head, p_id) == NULL || findDoctor(dhead, d_id) == NULL)
-    {
-        std::cout << "One of the patient_id or doctor_id does not exist." << endl;
-        return;
-    }
-    Appointment *newNode = new Appointment(id, p_id, d_id, a_date);
-    newNode->next = NULL;
-    if (appHead == NULL)
-    {
-        appHead = newNode;
-        return;
-    }
-    Appointment *temp = appHead;
-    while (temp->next != NULL)
-    {
+    return false;
+}
+
+bool isDoctorIdTaken(int id) {
+    Doctor* temp = doctorHead;
+    while (temp != nullptr) {
+        if (temp->id == id) {
+            return true;
+        }
         temp = temp->next;
     }
-    temp->next = newNode;
-};
-
-
-
-// Node class for linked list
-class Node {
-public:
-    Patient patient;
-    Node* next;
-    Node(Patient patient) : patient(patient), next(nullptr) {}
-};
-// Node class for linked list
-
-class LinkedList {
-public:
-    struct Node {
-        Patient patient;
-        Node* next;
-        Node(Patient patient) : patient(patient), next(nullptr) {}
-    };
-    Node* head;
-    LinkedList() : head(nullptr) {}
-    // Function to add a patient to the list
-    void addpatient(Patient patient) {
-        Node* newNode = new Node(patient);
-        if (!head) {
-            head = newNode;
-        } else {
-            Node* temp = head;
-            while (temp->next) {
-                temp = temp->next;
-            }
-            temp->next = newNode;
-        }
-    }
-    // Function to print the list of patients
-    void printPatients() {
-        cout << "patients" << endl;
-        cout << "---------------------" << endl;
-        Node* temp = head;
-        int index = 1;
-        while (temp) {
-            cout << "(" << index << ") : " << temp->patient.getId() << " " << temp->patient.getName() << " " << temp->patient.getGender() << endl;
-            temp = temp->next;
-            index++;
-        }
-        cout << "---------------------" << endl;
-    }
-    // Function to find a patient by ID
-    bool isIdTaken(int id) {
-        Node* temp = head;
-        while (temp) {
-            if (temp->patient.getId() == id) {
-                return true;
-            }
-            temp = temp->next;
-        }
-        return false;
-    }
-};
-
-void startMessage(){
-    cout<<" Menu: "<<endl;
-    cout<<"1. Register a patient: "<<endl;
-    cout<<"2. Register a doctor: "<<endl;
-    cout<<"3. Register an appointment: "<<endl;
-    cout<<"4. Display patients: "<<endl;
-    cout<<"5. Display Doctors: "<<endl;
-    cout<<"6. Display Appointments: "<<endl;
-    cout<<"7. Exit: "<<endl;
-} 
-      
-                // Function to validate name (no numbers allowed)
-bool isValidName(string name) {
-      return regex_match(name, regex("^[A-Za-z]+$"));
-    };
-void processCommands() {
-    LinkedList patientList;
-    string input;
-    string command;
-    do {
-        cout << ">";
-        getline(cin, input);
-        istringstream iss(input);
-        iss >> command;
-        // Convert the command to lowercase for case-insensitive comparison
-        for (size_t i = 0; i < command.length(); i++) {
-            command[i] = tolower(command[i]);
-        };
-        // Process the command
-        if (command == "4") {
-            cout << "------------------------------------------------------------------------------------------------------------------" << endl;
-            patientList. printPatients();
-            cout << "------------------------------------------------------------------------------------------------------------------" << endl;
-        } else if (command == "1") {
-            int number_of_patients;
-            cout << "How many patients do you want to add?" << endl;
-            cin >> number_of_patients;
-            cin.ignore(); // Ignore the newline character left in the buffer
-            cout << "Enter patients data in format : <patient_id> <name> <dob> <gender>" << endl;
-            // Get patients data
-            for (int i = 0; i < number_of_patients; i++) {
-                string input, id, name, dob, gender;
-                cout << "Enter the data for patient (" << i + 1 << ")" << endl;
-                getline(cin, input);
-                istringstream patient_ss(input);
-                if (patient_ss >> id >> name >> dob>> gender) {
-                    // Validate names
-                    if (!isValidName(name)) {
-                        cerr << "Invalid name format. Names must contain only letters." << endl;
-                        i--; // Ask for the current patient data again
-                        continue;
-                    }
-                    // Check if ID is taken, if so prompt to enter a different ID
-                    if (patientList.isIdTaken(stoi(id))) {
-                        cerr << "A patient with ID " << id << " already exists. Please use a different ID." << endl;
-                        i--; // Ask for the current patient data again
-                    } else {
-                        Patient p1 = Patient(stoi(id), name,dob,gender);
-                        patientList.addpatient(p1);
-                    }
-                } else {
-                    cerr << "Invalid input format" << endl;
-                    i--; // Ask for the current patient data again
-                }
-            }
-            cout << "Finished adding patients" << endl;
-        } else {
-            // Invalid command entered
-            if (command != "exit") {
-                cout << "Invalid command. Below is the help option to provide you a list of commands." << endl;
-            }
-        }
-    } while (command != "exit");
+    return false;
 }
-int main(){
-    startMessage();
+
+bool isPatientIdValid(int id) {
+    Patient* temp = patientHead;
+    while (temp != nullptr) {
+        if (temp->id == id) {
+            return true;
+        }
+        temp = temp->next;
+    }
+    return false;
+}
+
+bool isDoctorIdValid(int id) {
+    Doctor* temp = doctorHead;
+    while (temp != nullptr) {
+        if (temp->id == id) {
+            return true;
+        }
+        temp = temp->next;
+    }
+    return false;
+}
+
+bool isValidName(const string& name) {
+    return regex_match(name, regex("^[A-Za-z]+$"));
+}
+
+int getValidatedId() {
+    string input;
+    while (true) {
+        cin >> input;
+        if (regex_match(input, regex("^[0-9]+$"))) {
+            return stoi(input);
+        } else {
+            cout << "Invalid ID. IDs must be numbers only. Please enter again: ";
+        }
+    }
+}
+
+void addPatient() {
+    cout << "Enter patient ID: ";
+    int id = getValidatedId();
+    if (isPatientIdTaken(id)) {
+        cout << "Patient ID already exists. Please enter a unique ID." << endl;
+        return;
+    }
+
+    string name, dob, gender;
+    cout << "Enter patient name: ";
+    cin.ignore();
+    getline(cin, name);
+    if (!isValidName(name)) {
+        cout << "Invalid name. Names must contain only letters." << endl;
+        return;
+    }
+    cout << "Enter patient date of birth: ";
+    getline(cin, dob);
+    cout << "Enter patient gender: ";
+    getline(cin, gender);
+
+    Patient* newPatient = new Patient(id, name, dob, gender);
+    if (patientHead == nullptr) {
+        patientHead = newPatient;
+    } else {
+        Patient* temp = patientHead;
+        while (temp->next != nullptr) {
+            temp = temp->next;
+        }
+        temp->next = newPatient;
+    }
+
+    cout << "Patient added successfully." << endl;
+}
+
+void addDoctor() {
+    cout << "Enter doctor ID: ";
+    int id = getValidatedId();
+    if (isDoctorIdTaken(id)) {
+        cout << "Doctor ID already exists. Please enter a unique ID." << endl;
+        return;
+    }
+
+    string name, specialization;
+    cout << "Enter doctor name: ";
+    cin.ignore();
+    getline(cin, name);
+    if (!isValidName(name)) {
+        cout << "Invalid name. Names must contain only letters." << endl;
+        return;
+    }
+    cout << "Enter doctor specialization: ";
+    getline(cin, specialization);
+
+    Doctor* newDoctor = new Doctor(id, name, specialization);
+    if (doctorHead == nullptr) {
+        doctorHead = newDoctor;
+    } else {
+        Doctor* temp = doctorHead;
+        while (temp->next != nullptr) {
+            temp = temp->next;
+        }
+        temp->next = newDoctor;
+    }
+
+    cout << "Doctor added successfully." << endl;
+}
+
+void addAppointment() {
+    cout << "Enter appointment ID: ";
+    int appointment_id = getValidatedId();
+
+    cout << "Enter patient ID: ";
+    int patient_id = getValidatedId();
+    if (!isPatientIdValid(patient_id)) {
+        cout << "Patient ID does not exist. Please enter a valid ID." << endl;
+        return;
+    }
+
+    cout << "Enter doctor ID: ";
+    int doctor_id = getValidatedId();
+    if (!isDoctorIdValid(doctor_id)) {
+        cout << "Doctor ID does not exist. Please enter a valid ID." << endl;
+        return;
+    }
+
+    string appointment_date;
+    cout << "Enter appointment date: ";
+    cin.ignore();
+    getline(cin, appointment_date);
+
+    Appointment* newAppointment = new Appointment(appointment_id, patient_id, doctor_id, appointment_date);
+    if (appointmentHead == nullptr) {
+        appointmentHead = newAppointment;
+    } else {
+        Appointment* temp = appointmentHead;
+        while (temp->next != nullptr) {
+            temp = temp->next;
+        }
+        temp->next = newAppointment;
+    }
+
+    cout << "Appointment added successfully." << endl;
+}
+
+void displayPatients() {
+    Patient* temp = patientHead;
+    cout << "Patients:" << endl;
+    while (temp != nullptr) {
+        cout << "ID: " << temp->id << ", Name: " << temp->name << ", DOB: " << temp->dob << ", Gender: " << temp->gender << endl;
+        temp = temp->next;
+    }
+}
+
+void displayDoctors() {
+    Doctor* temp = doctorHead;
+    cout << "Doctors:" << endl;
+    while (temp != nullptr) {
+        cout << "ID: " << temp->id << ", Name: " << temp->name << ", Specialization: " << temp->specialization << endl;
+        temp = temp->next;
+    }
+}
+
+void displayAppointments() {
+    Appointment* temp = appointmentHead;
+    cout << "Appointments:" << endl;
+    while (temp != nullptr) {
+        cout << "Appointment ID: " << temp->appointment_id << ", Patient ID: " << temp->patient_id << ", Doctor ID: " << temp->doctor_id << ", Date: " << temp->appointment_date << endl;
+        temp = temp->next;
+    }
+}
+
+void processCommands() {
+    int choice;
+    do {
+        startMessage();
+        cout << "Enter your choice: ";
+        cin >> choice;
+        switch (choice) {
+            case 1:
+                addPatient();
+                break;
+            case 2:
+                addDoctor();
+                break;
+            case 3:
+                addAppointment();
+                break;
+            case 4:
+                displayPatients();
+                break;
+            case 5:
+                displayDoctors();
+                break;
+            case 6:
+                displayAppointments();
+                break;
+            case 7:
+                cout << "Exiting..." << endl;
+                break;
+            default:
+                cout << "Invalid choice. Please try again." << endl;
+                break;
+        }
+    } while (choice != 7);
+}
+
+int main() {
     processCommands();
     return 0;
 }

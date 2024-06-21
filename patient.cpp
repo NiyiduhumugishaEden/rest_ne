@@ -5,7 +5,6 @@
 
 using namespace std;
 
-// Class to represent a patient
 class Patient {
 public:
     int id;
@@ -18,7 +17,6 @@ public:
             : id(id), name(name), dob(dob), gender(gender), next(nullptr) {}
 };
 
-// Class to represent a doctor
 class Doctor {
 public:
     int id;
@@ -30,7 +28,6 @@ public:
             : id(id), name(name), specialization(specialization), next(nullptr) {}
 };
 
-// Class to represent an appointment
 class Appointment {
 public:
     int appointment_id;
@@ -112,6 +109,16 @@ bool isValidName(const string& name) {
     return regex_match(name, regex("^[A-Za-z]+$"));
 }
 
+// Function to validate date in the format DD/MM/YYYY
+bool isValidDate(const string& date) {
+    return regex_match(date, regex("^\\d{2}/\\d{2}/\\d{4}$"));
+}
+
+// Function to validate gender (male or female)
+bool isValidGender(const string& gender) {
+    return (gender == "male" || gender == "female");
+}
+
 // Function to get a validated ID (numbers only)
 int getValidatedId() {
     string input;
@@ -140,6 +147,20 @@ int getValidatedChoice() {
     }
 }
 
+// Function to get a non-empty input
+string getNonEmptyInput(const string& prompt) {
+    string input;
+    while (true) {
+        cout << prompt;
+        getline(cin, input);
+        if (!input.empty()) {
+            return input;
+        } else {
+            cout << "Input cannot be empty. Please enter again: ";
+        }
+    }
+}
+
 // Function to add a new patient
 void addPatient() {
     cout << "Enter patient ID: ";
@@ -152,15 +173,21 @@ void addPatient() {
     string name, dob, gender;
     cout << "Enter patient name: ";
     cin.ignore();
-    getline(cin, name);
+    name = getNonEmptyInput("");
     if (!isValidName(name)) {
         cout << "Invalid name. Names must contain only letters." << endl;
         return;
     }
-    cout << "Enter patient date of birth: ";
-    getline(cin, dob);
-    cout << "Enter patient gender: ";
-    getline(cin, gender);
+    dob = getNonEmptyInput("Enter patient date of birth (DD/MM/YYYY): ");
+    if (!isValidDate(dob)) {
+        cout << "Invalid date of birth. Please use the format DD/MM/YYYY." << endl;
+        return;
+    }
+    gender = getNonEmptyInput("Enter patient gender (male or female): ");
+    if (!isValidGender(gender)) {
+        cout << "Invalid gender. Please enter 'male' or 'female'." << endl;
+        return;
+    }
 
     Patient* newPatient = new Patient(id, name, dob, gender);
     if (patientHead == nullptr) {
@@ -188,13 +215,12 @@ void addDoctor() {
     string name, specialization;
     cout << "Enter doctor name: ";
     cin.ignore();
-    getline(cin, name);
+    name = getNonEmptyInput("");
     if (!isValidName(name)) {
         cout << "Invalid name. Names must contain only letters." << endl;
         return;
     }
-    cout << "Enter doctor specialization: ";
-    getline(cin, specialization);
+    specialization = getNonEmptyInput("Enter doctor specialization: ");
 
     Doctor* newDoctor = new Doctor(id, name, specialization);
     if (doctorHead == nullptr) {
@@ -230,9 +256,13 @@ void addAppointment() {
     }
 
     string appointment_date;
-    cout << "Enter appointment date: ";
+    cout << "Enter appointment date (DD/MM/YYYY): ";
     cin.ignore();
-    getline(cin, appointment_date);
+    appointment_date = getNonEmptyInput("");
+    if (!isValidDate(appointment_date)) {
+        cout << "Invalid appointment date. Please use the format DD/MM/YYYY." << endl;
+        return;
+    }
 
     Appointment* newAppointment = new Appointment(appointment_id, patient_id, doctor_id, appointment_date);
     if (appointmentHead == nullptr) {

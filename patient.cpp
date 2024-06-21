@@ -80,6 +80,18 @@ bool isDoctorIdTaken(int id) {
     return false;
 }
 
+// Function to check if an appointment ID is already taken
+bool isAppointmentIdTaken(int id) {
+    Appointment* temp = appointmentHead;
+    while (temp != nullptr) {
+        if (temp->appointment_id == id) {
+            return true;
+        }
+        temp = temp->next;
+    }
+    return false;
+}
+
 // Function to check if a patient ID is valid (exists in the list)
 bool isPatientIdValid(int id) {
     Patient* temp = patientHead;
@@ -111,7 +123,24 @@ bool isValidName(const string& name) {
 
 // Function to validate date in the format DD/MM/YYYY
 bool isValidDate(const string& date) {
-    return regex_match(date, regex("^\\d{2}/\\d{2}/\\d{4}$"));
+    regex dateRegex("^\\d{2}/\\d{2}/\\d{4}$");
+    if (!regex_match(date, dateRegex)) {
+        return false;
+    }
+
+    int day, month, year;
+    char delimiter;
+    stringstream dateStream(date);
+    dateStream >> day >> delimiter >> month >> delimiter >> year;
+
+    if (year >= 2024) return false;
+    if (month < 1 || month > 12) return false;
+
+    int daysInMonth[] = { 31, (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+
+    if (day < 1 || day > daysInMonth[month - 1]) return false;
+
+    return true;
 }
 
 // Function to validate gender (male or female)
@@ -161,33 +190,62 @@ string getNonEmptyInput(const string& prompt) {
     }
 }
 
+// Function to get a validated name input
+string getValidatedName(const string& prompt) {
+    string name;
+    while (true) {
+        name = getNonEmptyInput(prompt);
+        if (isValidName(name)) {
+            return name;
+        } else {
+            cout << "Invalid name. Names must contain only letters. Please enter again: ";
+        }
+    }
+}
+
+// Function to get a validated date input
+string getValidatedDate(const string& prompt) {
+    string date;
+    while (true) {
+        date = getNonEmptyInput(prompt);
+        if (isValidDate(date)) {
+            return date;
+        } else {
+            cout << "Invalid date. Please use the format DD/MM/YYYY. Please enter again: ";
+        }
+    }
+}
+
+// Function to get a validated gender input
+string getValidatedGender(const string& prompt) {
+    string gender;
+    while (true) {
+        gender = getNonEmptyInput(prompt);
+        if (isValidGender(gender)) {
+            return gender;
+        } else {
+            cout << "Invalid gender. Please enter 'male' or 'female'. Please enter again: ";
+        }
+    }
+}
+
 // Function to add a new patient
 void addPatient() {
-    cout << "Enter patient ID: ";
-    int id = getValidatedId();
-    if (isPatientIdTaken(id)) {
+    int id;
+    while (true) {
+        cout << "Enter patient ID: ";
+        id = getValidatedId();
+        if (!isPatientIdTaken(id)) {
+            break;
+        }
         cout << "Patient ID already exists. Please enter a unique ID." << endl;
-        return;
     }
 
     string name, dob, gender;
-    cout << "Enter patient name: ";
-    cin.ignore();
-    name = getNonEmptyInput("");
-    if (!isValidName(name)) {
-        cout << "Invalid name. Names must contain only letters." << endl;
-        return;
-    }
-    dob = getNonEmptyInput("Enter patient date of birth (DD/MM/YYYY): ");
-    if (!isValidDate(dob)) {
-        cout << "Invalid date of birth. Please use the format DD/MM/YYYY." << endl;
-        return;
-    }
-    gender = getNonEmptyInput("Enter patient gender (male or female): ");
-    if (!isValidGender(gender)) {
-        cout << "Invalid gender. Please enter 'male' or 'female'." << endl;
-        return;
-    }
+    cin.ignore(); // to ignore leftover newline character
+    name = getValidatedName("Enter patient name: ");
+    dob = getValidatedDate("Enter patient date of birth (DD/MM/YYYY): ");
+    gender = getValidatedGender("Enter patient gender (male or female): ");
 
     Patient* newPatient = new Patient(id, name, dob, gender);
     if (patientHead == nullptr) {
@@ -205,21 +263,19 @@ void addPatient() {
 
 // Function to add a new doctor
 void addDoctor() {
-    cout << "Enter doctor ID: ";
-    int id = getValidatedId();
-    if (isDoctorIdTaken(id)) {
+    int id;
+    while (true) {
+        cout << "Enter doctor ID: ";
+        id = getValidatedId();
+        if (!isDoctorIdTaken(id)) {
+            break;
+        }
         cout << "Doctor ID already exists. Please enter a unique ID." << endl;
-        return;
     }
 
     string name, specialization;
-    cout << "Enter doctor name: ";
-    cin.ignore();
-    name = getNonEmptyInput("");
-    if (!isValidName(name)) {
-        cout << "Invalid name. Names must contain only letters." << endl;
-        return;
-    }
+    cin.ignore(); // to ignore leftover newline character
+    name = getValidatedName("Enter doctor name: ");
     specialization = getNonEmptyInput("Enter doctor specialization: ");
 
     Doctor* newDoctor = new Doctor(id, name, specialization);
@@ -238,31 +294,38 @@ void addDoctor() {
 
 // Function to add a new appointment
 void addAppointment() {
-    cout << "Enter appointment ID: ";
-    int appointment_id = getValidatedId();
+    int appointment_id, patient_id, doctor_id;
 
-    cout << "Enter patient ID: ";
-    int patient_id = getValidatedId();
-    if (!isPatientIdValid(patient_id)) {
-        cout << "Patient ID does not exist. Please enter a valid ID." << endl;
-        return;
+    while (true) {
+        cout << "Enter appointment ID: ";
+        appointment_id = getValidatedId();
+        if (!isAppointmentIdTaken(appointment_id)) {
+            break;
+        }
+        cout << "Appointment ID already exists. Please enter a unique ID." << endl;
     }
 
-    cout << "Enter doctor ID: ";
-    int doctor_id = getValidatedId();
-    if (!isDoctorIdValid(doctor_id)) {
+    while (true) {
+        cout << "Enter patient ID: ";
+        patient_id = getValidatedId();
+        if (isPatientIdValid(patient_id)) {
+            break;
+        }
+        cout << "Patient ID does not exist. Please enter a valid ID." << endl;
+    }
+
+    while (true) {
+        cout << "Enter doctor ID: ";
+        doctor_id = getValidatedId();
+        if (isDoctorIdValid(doctor_id)) {
+            break;
+        }
         cout << "Doctor ID does not exist. Please enter a valid ID." << endl;
-        return;
     }
 
     string appointment_date;
-    cout << "Enter appointment date (DD/MM/YYYY): ";
-    cin.ignore();
-    appointment_date = getNonEmptyInput("");
-    if (!isValidDate(appointment_date)) {
-        cout << "Invalid appointment date. Please use the format DD/MM/YYYY." << endl;
-        return;
-    }
+    cin.ignore(); // to ignore leftover newline character
+    appointment_date = getValidatedDate("Enter appointment date (DD/MM/YYYY): ");
 
     Appointment* newAppointment = new Appointment(appointment_id, patient_id, doctor_id, appointment_date);
     if (appointmentHead == nullptr) {
